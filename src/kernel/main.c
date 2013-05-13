@@ -13,9 +13,9 @@ os_init(void) {
 	/*测试字符串输出开始*/
 	int samplehex = -26;
 	char *samplestr = "The hex of -26 is:\n";
-	printk("d test:%d + %d = %d\n",-20,10,-10);
-	printk("s test and x test:%s %x\n",samplestr,samplehex);
-	printk("c test: %c is 'a' ,%c is 'c'",'a','c'); 
+	printk("%%d test:%d + %d = %d\n",-20,10,-10);
+	printk("%%s test and %%x test:%s %x\n",samplestr,samplehex);
+	printk("%%c test: %c is 'a' ,%c is 'c'",'a','c'); 
 	/*测试字符串输出结束*/
 	sti();
 	while (TRUE) {

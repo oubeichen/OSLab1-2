@@ -17,7 +17,11 @@ vfprintf(void (*putchar_func)(char), const char *format, void **data) {
 		putchar_func(*s);
 	}*/
 	for(s = format; *s;s ++){
-		if(*s == '%' && *(s+1) == 'd'){
+		if(*s == '%' && *(s+1) == '%'){//首先处理百分号转义
+			putchar_func(*++s);
+			charnum++;
+		}
+		else if(*s == '%' && *(s+1) == 'd'){
 			s++;//跳过后面的'd'
 			if(data)//以防万一data为空虽然好像没什么用因为data是void类型的没法预料
 			{
