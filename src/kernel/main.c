@@ -2,6 +2,7 @@
 #include "x86.h"
 #include "vm.h"
 #include "irq.h"
+#include "kthread.h"
 
 void
 os_init(void) {

@@ -30,3 +30,4 @@ debug: kernel.img
 clean:
 	@cd boot; make clean
 	rm -f kernel kernel.img $(OBJS) $(OBJS:.o=.d)
+	rm -f *.d

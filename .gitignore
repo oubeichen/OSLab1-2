@@ -2,6 +2,8 @@
 *.swp
 *~
 *.img
+*.py
+*.pyc
 /boot/bootblock
 /kernel
 tags
