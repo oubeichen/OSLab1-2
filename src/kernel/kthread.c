@@ -2,7 +2,7 @@
 #include "kernel.h"
 #include "x86.h"
 
-PCB *creat_kthread(void *entry){
+PCB *create_kthread(void *entry){
 	if(pcb_stor_top >= MAX_TH_NUM){//空间不够
 		panic("The PCB storage is full!");
 		return NULL;
@@ -20,10 +20,7 @@ PCB *creat_kthread(void *entry){
 	list_init(&pcb->runq);
 	list_init(&pcb->semq);//初始化各链表节点
 	pcb->lockcnt = 0;//lock次数初始为0
-	if(freeqh == NULL){//可运行线程链表为空
-		freeqh = pcb;
-	}
-	list_add_before(&freeqh->freeq,&pcb->freeq);//插入到可运行线程链表
+	list_add_before(&freeqh,&pcb->freeq);//插入到可运行线程链表
 	assert(pcb != NULL);
 	//加入链表尾部
 	return pcb;
@@ -37,30 +34,23 @@ PCB *creat_kthread(void *entry){
  */
 void sleep(void){
 	list_del(&current->runq);//从正在运行链表中删除
-	if(freeqh == NULL){
-		freeqh = current;
-	}
-	list_add_before(&freeqh->freeq,&current->freeq);//插入到可运行线程链表
+	list_add_before(&freeqh,&current->freeq);//插入到可运行线程链表
 	asm volatile("int $0x80");
 }
 
 void wakeup(PCB *pcb){
 	list_del(&current->freeq);//从可运行链表中间删除
-	if(runqh == NULL){
-		runqh = current;
-	}
-	list_add_before(&runqh->runq,&current->runq);//插入到正在运行线程链表
-
+	list_add_before(&runqh,&current->runq);//插入到正在运行线程链表
 }
 
 void lock(void){
+	current->lockcnt++;//记录锁住次数
 	cli();
-	current->lockcnt++;
 }
 
 void unlock(void){
 	current->lockcnt--;
-	if(current->lockcnt == 0)
+	if(current->lockcnt == 0)//解锁
 		sti();
 }
 
@@ -73,15 +63,18 @@ new_sem(Semaphore *sem, int value) {
 
 void
 P(Semaphore *sem) {
+	lock();//锁定当前进程
 	sem->count --;
 	if (sem->count < 0) {
 		list_add_before(&sem->queue, &current->semq);
 	        sleep(); // 令当前进程立即进入睡眠
 	}
+	unlock();//解锁
 }
 
 void
 V(Semaphore *sem) {
+	lock();//锁定当前进程
 	sem->count ++;
         if (sem->count <= 0) {
 	        assert(!list_empty(&sem->queue));
@@ -89,5 +82,6 @@ V(Semaphore *sem) {
 	        list_del(sem->queue.next);
 	        wakeup(pcb); // 唤醒PCB所对应的进程
 	}
+	unlock();//解锁
 }
 

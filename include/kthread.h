@@ -24,12 +24,12 @@ typedef struct Semaphore Semaphore;//信号量结构定义
 
 //指向当前PCB的指针
 PCB *current;
-PCB *runqh,*freeqh;//正在运行的线程和可运行线程循环链表表头，每次插在表头的前面，即尾进头出
+ListHead runqh,freeqh;//正在运行的线程和可运行线程循环链表表头，每次插在表头的前面，即尾进头出,带一个空的表头
 PCB pcb_stor[MAX_TH_NUM];//没找到动态分配的方式，所以用静态存储
 int pcb_stor_top;//pcb_stor已经使用个数
 
 // 创建一个内核线程
-PCB *create_kthread(void*);
+PCB *create_kthread(void *entry);
 // 使当前进程/线程立即阻塞，并可以在未来被唤醒
 void sleep(void);
 // 唤醒一个进程/线程
