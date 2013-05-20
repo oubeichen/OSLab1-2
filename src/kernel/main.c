@@ -64,6 +64,7 @@ os_init(void) {
 	/*测试生产者消费者代码开始*/
 	list_init(&runqh);//另一个指针用不到
 	list_init(&freeqh);
+	nowrun = &runqh;
 	test_setup();
 	/*测试生产者消费者代码结束*/
 	sti();

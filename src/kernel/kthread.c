@@ -7,7 +7,7 @@ PCB *create_kthread(void *entry){
 		panic("The PCB storage is full!");
 		return NULL;
 	}	
-	PCB *pcb = pcb_stor + pcb_stor_top++;//分配完后top加一
+	PCB *pcb = pcb_stor + (pcb_stor_top++);//分配完后top加一
 	TrapFrame *tf = ((TrapFrame*)(pcb->kstack + STK_SZ)) - 1;
        	assert(tf != NULL);
 	pcb->tf = tf;
@@ -15,7 +15,8 @@ PCB *create_kthread(void *entry){
 	tf->ds = tf->es = KSEL(SEG_KDATA);
 	tf->eax = tf->ebx = tf->ecx = tf->edx = tf->edi = tf->esi = tf->ebp = 0;
 	tf->eflags = 0x00000202;//仅IF设置成1
-	tf->eip = (uint32_t)entry;
+	tf->eip = (uint32_t)entry;//保存寄存器现场
+	tf->irq = 1111;
 	list_init(&pcb->freeq);
 	list_init(&pcb->runq);
 	list_init(&pcb->semq);//初始化各链表节点
@@ -33,14 +34,16 @@ PCB *create_kthread(void *entry){
  *     ESP和SS是在ring3进程切换时所用的(当CS的DPL不为0时，硬件会自动执行堆栈切换)，由于内核线程运行在内核态，我们暂时不需要使用它。相关内容请参考i386手册。
  */
 void sleep(void){
+	lock();//锁current
 	list_del(&current->runq);//从正在运行链表中删除
 	list_add_before(&freeqh,&current->freeq);//插入到可运行线程链表
+	unlock();//解锁
 	asm volatile("int $0x80");
 }
 
 void wakeup(PCB *pcb){
-	list_del(&current->freeq);//从可运行链表中间删除
-	list_add_before(&runqh,&current->runq);//插入到正在运行线程链表
+	list_del(&pcb->freeq);//从可运行链表中间删除
+	list_add_before(&runqh,&pcb->runq);//插入到正在运行线程链表
 }
 
 void lock(void){

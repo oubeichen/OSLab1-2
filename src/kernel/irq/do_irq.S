@@ -38,7 +38,8 @@ trap:
 
 	pushl %esp
 	call irq_handle
-	addl $4, %esp
+	movl (current), %esi
+	movl 0(%esi), %esp
 	
 	popal
 	popl %gs
