@@ -4,7 +4,7 @@
 
 void irq_handle(TrapFrame *tf) {
 	int irq = tf->irq;
-	//assert(irq >= 0);
+	assert(irq >= 0);
 
 	if (irq < 1000) {
 		if(irq == 0x80){//从sleep进来的
@@ -30,7 +30,7 @@ void irq_handle(TrapFrame *tf) {
 	} else if (irq >= 1000) {//其他情况进来的，暂且当成正确的
 		// external interrupt
 		current->tf = tf;
-		//同上时间片轮
+		//同上时间片轮	
 		if(!list_empty(&runqh)){
 			nowrun = nowrun->next;
 			if(nowrun == &runqh)//如果回到了表头
