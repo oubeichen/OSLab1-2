@@ -22,10 +22,10 @@ kernel: $(OBJS)
 .PHONY: play debug clean
 
 play: kernel.img
-	$(QEMU) -serial stdio kernel.img
+	$(QEMU) -serial stdio kernel.img --no-kvm
 
 debug: kernel.img
-	$(QEMU) -serial stdio -s -S kernel.img
+	$(QEMU) -serial stdio -s -S kernel.img --no-kvm
 
 clean:
 	@cd boot; make clean
