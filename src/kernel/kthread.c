@@ -52,7 +52,8 @@ void lock(void){
 }
 
 void unlock(void){
-	current->lockcnt--;
+	if(current->lockcnt != 0)//并没有锁上
+		current->lockcnt--;
 	if(current->lockcnt == 0)//解锁
 		sti();
 }
