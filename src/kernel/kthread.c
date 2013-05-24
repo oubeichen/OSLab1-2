@@ -47,8 +47,8 @@ void wakeup(PCB *pcb){
 }
 
 void lock(void){
-	current->lockcnt++;//记录锁住次数
 	cli();
+	current->lockcnt++;//记录锁住次数
 }
 
 void unlock(void){
