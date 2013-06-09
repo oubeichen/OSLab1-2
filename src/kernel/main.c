@@ -55,17 +55,17 @@ os_init(void) {
 	init_i8259();
 	printk("The OS is now working!\n");
 	/*测试字符串输出开始*/
-	int samplehex = -26;
-	char *samplestr = "The hex of -26 is:\n";
-	printk("%%d test:%d + %d = %d\n",-20,10,-10);
-	printk("%%s test and %%x test:%s %x\n",samplestr,samplehex);
-	printk("%%c test: %c is 'a' ,%c is 'c'\n",'a','c'); 
+	//int samplehex = -26;
+	//char *samplestr = "The hex of -26 is:\n";
+	//printk("%%d test:%d + %d = %d\n",-20,10,-10);
+	//printk("%%s test and %%x test:%s %x\n",samplestr,samplehex);
+	//printk("%%c test: %c is 'a' ,%c is 'c'\n",'a','c'); 
 	/*测试字符串输出结束*/
 	/*测试生产者消费者代码开始*/
 	list_init(&runqh);//另一个指针用不到
 	list_init(&freeqh);
 	nowrun = &runqh;
-	test_setup();
+	//test_setup();
 	/*测试生产者消费者代码结束*/
 	sti();
 	while (TRUE) {
