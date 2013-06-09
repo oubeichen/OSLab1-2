@@ -1,13 +1,14 @@
 #include "kthread.h"
 #include "kernel.h"
 #include "x86.h"
-
+pid_t pidnow = 0;//当前分配到的pid值
 PCB *create_kthread(void *entry){
 	if(pcb_stor_top >= MAX_TH_NUM){//空间不够
 		panic("The PCB storage is full!");
 		return NULL;
 	}	
 	PCB *pcb = pcb_stor + (pcb_stor_top++);//分配完后top加一
+	pcb->pid = ++pidnow;//分配pid
 	TrapFrame *tf = ((TrapFrame*)(pcb->kstack + STK_SZ)) - 1;
        	assert(tf != NULL);
 	pcb->tf = tf;
@@ -88,4 +89,16 @@ V(Semaphore *sem) {
 	}
 	unlock();//解锁
 }
-
+void schedule()
+{
+	if(!list_empty(&runqh)){
+		nowrun = nowrun->next;
+		if(nowrun == &runqh)//如果回到了表头
+		{
+			nowrun = nowrun->next;
+		}
+		current = list_entry(nowrun,PCB,runq);
+	}else{
+		panic("Empty run list!");//运行线程链表是空的
+	}
+}

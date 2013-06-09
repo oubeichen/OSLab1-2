@@ -10,6 +10,7 @@
 struct PCB {
 	TrapFrame *tf;
 	uint32_t lockcnt;//用于记录lock函数执行次数
+	pid_t pid;
 	ListHead runq,freeq;//在正在运行线程和可运行线程循环链表中的节点 
 	//不做成同一个节点类型的原因是防止出现不在想要的链表而进行错误的操作
 	ListHead semq;//信号量链表中节点
@@ -38,6 +39,8 @@ void wakeup(PCB*);
 // 短临界区保护，实现关中断保护的原子操作
 void lock(void);
 void unlock(void);
+
+void schedule();//线程调度
 
 //信号量相关函数
 void new_sem(Semaphore*,int);
