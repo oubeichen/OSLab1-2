@@ -31,7 +31,7 @@ void send(pid_t dst, Message *m)
 void receive(pid_t dst, Message *m)
 {
 	int i;
-	Message *srcmsg;
+	Message *srcmsg = NULL;
 	P(&full_any);//若总队列都没消息，则阻塞
 	if(dst == ANY)
 	{
