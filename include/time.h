@@ -12,12 +12,12 @@
 
 #define HZ        100
 
+long jiffy;
 struct Time {
 	int year, month, day;
 	int hour, minute, second;
 };
 typedef struct Time Time;
-extern long jiffy;
 
 void get_time(Time *tm);
 void update_sched(void);
@@ -25,7 +25,6 @@ void update_jiffy(void);
 
 pid_t TIME;
 
-long jiffy = 0;
 void init_timer(void);
 void timerd(void);
 

@@ -8,6 +8,7 @@ void
 send_keymsg(void) {
 	Message m;
 	m.type = MSG_TTY_GETKEY;
+	m.src = MSG_HWINTR;
 	send(TTY, &m);
 }
 

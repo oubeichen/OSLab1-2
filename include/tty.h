@@ -11,6 +11,7 @@
 #define NR_TTY         4
 #define MSG_TTY_GETKEY 1
 #define MSG_TTY_UPDATE 2
+#define MSG_HWINTR     -1
 #define LBUF_SZ        256
 #define CBUF_SZ        1024
 #define RSTK_SZ        16
@@ -48,4 +49,5 @@ void ttyd(void);
 
 void init_console();
 void send_keymsg(void);
+void send_updatemsg(void);
 #endif

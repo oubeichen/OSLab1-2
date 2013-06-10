@@ -14,7 +14,10 @@ void send(pid_t dst, Message *m)
 		msg_now = (msg_now + 1) % MAXMSG;
 	}
 	msg_queue[msg_now].dest = dst;
-	msg_queue[msg_now].src = current->pid;
+	if(!msg_queue[msg_now].src)
+	{
+		msg_queue[msg_now].src = current->pid;//不是中断发送的消息
+	}
 	msg_queue[msg_now].type = m->type;
 	for(i = 0;i < MSG_SZ && m->payload[i];i++)
 	{

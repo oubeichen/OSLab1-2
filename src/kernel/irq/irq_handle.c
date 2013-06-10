@@ -3,10 +3,11 @@
 #include "kthread.h"
 #include "time.h"
 #include "tty.h"
-static void
+void
 send_updatemsg(void) {
 	if (jiffy % (HZ / 10) == 0) {
 		Message m;
+		m.src = MSG_HWINTR;
 		m.type = MSG_TTY_UPDATE;
 		send(TTY, &m);
 	}
