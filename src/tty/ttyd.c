@@ -1,9 +1,9 @@
-#include "module.h"
+//#include "module.h"
 #include "debug.h"
-#include "mods/msg.h"
-#include "mods/tty.h"
-#include "mods/hal.h"
-#include "mods/proc.h"
+#include "message.h"
+#include "tty.h"
+#include "hal.h"
+//#include "mods/proc.h"
 #include "x86.h"
 
 void

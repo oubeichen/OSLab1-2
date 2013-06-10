@@ -3,6 +3,7 @@
 #include "x86.h"
 #include "debug.h"
 #include "string.h"
+#include "time.h"
 
 pid_t TIME;
 

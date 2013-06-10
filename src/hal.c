@@ -1,6 +1,7 @@
 #include "kernel.h"
 #include "debug.h"
 #include "string.h"
+#include "hal.h"
 
 #define NR_DEV 64
 

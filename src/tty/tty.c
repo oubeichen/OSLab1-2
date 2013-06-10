@@ -1,6 +1,6 @@
 #include "kernel.h"
-#include "mods/tty.h"
-#include "mods/irq.h"
+#include "tty.h"
+#include "irq.h"
 #include "debug.h"
 
 pid_t TTY;

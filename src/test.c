@@ -1,3 +1,4 @@
+#include "test.h"
 void
 echo() {
 	static int tty = 1;

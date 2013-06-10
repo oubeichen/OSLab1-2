@@ -1,5 +1,5 @@
-#include "mods/tty.h"
-#include "mods/msg.h"
+#include "tty.h"
+#include "message.h"
 #include "x86.h"
 #include "debug.h"
 #include "term.h"

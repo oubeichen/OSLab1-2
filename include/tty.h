@@ -1,6 +1,9 @@
 #ifndef __TTY_H__
 #define __TTY_H__
 
+#include "x86.h"
+#include "message.h"
+#include "hal.h"
 #define NR_TTY         4
 #define MSG_TTY_GETKEY 1
 #define MSG_TTY_UPDATE 2

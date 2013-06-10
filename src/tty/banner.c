@@ -1,5 +1,5 @@
-#include "mods/tty.h"
-#include "mods/time.h"
+#include "tty.h"
+#include "time.h"
 #include "term.h"
 
 extern char banner[SCR_W + 1];
