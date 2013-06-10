@@ -1,26 +1,10 @@
-#include "common.h"
-#include "assert.h"
-#include "x86.h"
-#include "debug.h"
-#include "string.h"
 #include "time.h"
 
-pid_t TIME;
-
-long jiffy = 0;
-void init_timer(void);
-void timerd(void);
 static Time rt;
-
-void init_i8253(void);
-void update_sched(void);
-void update_jiffy(void);
-int read_rtc(int);
-
 void init_timer(void) {
 	init_i8253();
-	add_irq_handle(0, update_sched);
-	add_irq_handle(0, update_jiffy);
+	//add_irq_handle(0, update_sched);
+	//add_irq_handle(0, update_jiffy);
 
 	int tmp;
 	do {

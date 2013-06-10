@@ -3,7 +3,10 @@
 #include "vm.h"
 #include "irq.h"
 #include "kthread.h"
-
+#include "test.h"
+#include "hal.h"
+#include "time.h"
+/*
 #define NBUF 5
 int buf[NBUF], f = 0, r = 0, g = 1, tid = 1;
 Semaphore empty, full, mutex;
@@ -46,7 +49,7 @@ test_setup(void) {
     wakeup(create_kthread(test_consumer));
     wakeup(create_kthread(test_consumer));
 }
-
+*/
 void
 os_init(void) {
 	init_seg();
@@ -67,6 +70,15 @@ os_init(void) {
 	nowrun = &runqh;
 	//test_setup();
 	/*测试生产者消费者代码结束*/
+	//终端测试代码开始
+	init_hal();
+	init_timer();
+	init_tty();
+	PCB *temp = create_kthread(ttyd);
+	TTY = temp->pid;
+	wakeup(temp);
+	test();
+	//终端测试代码结束
 	sti();
 	while (TRUE) {
 		wait_intr();

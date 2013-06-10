@@ -1,4 +1,3 @@
-#include "x86.h"
 #include "tty.h"
 #include "vm.h"
 #include "irq.h"
@@ -258,15 +257,6 @@ init_consl(Console *c, uint16_t *vbuf) {
 	consl_sync(c);
 }
 
-static void
-send_updatemsg(void) {
-	if (jiffy % (HZ / 10) == 0) {
-		Message m;
-		m.type = MSG_TTY_UPDATE;
-		send(TTY, &m);
-	}
-}
-
 void init_console(void) {
 	memset(banner, ' ', sizeof(banner));
 	banner[SCR_W] = 0;
@@ -275,8 +265,6 @@ void init_console(void) {
 	for (i = 0; i < NR_TTY; i ++) {
 		init_consl(ttys + i, vbuf[i]);
 	}
-	add_irq_handle(0, send_updatemsg);
+	//add_irq_handle(0, send_updatemsg);
 }
-
-
 

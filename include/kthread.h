@@ -40,6 +40,7 @@ void wakeup(PCB*);
 void lock(void);
 void unlock(void);
 
+int need_sched;
 void schedule();//线程调度
 
 //信号量相关函数

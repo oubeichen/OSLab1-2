@@ -69,3 +69,14 @@ utoa(unsigned int value, int base) {
 	static char buf[50];
 	return utoa_buf(value, buf, base);
 }
+int strcmp(const char *source,const char *dest)
+{
+   int ret = 0 ;
+   while( ! (ret = *( unsigned char *)source - *(unsigned char *)dest) && *dest)
+      source++, dest++;
+   if ( ret < 0 )
+        ret = -1 ;
+   else if ( ret > 0 )
+        ret = 1 ;
+   return(ret);
+}

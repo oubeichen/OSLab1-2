@@ -4,6 +4,10 @@
 #include "x86.h"
 #include "message.h"
 #include "hal.h"
+#include "irq.h"
+#include "debug.h"
+#include "kernel.h"
+#include "time.h"
 #define NR_TTY         4
 #define MSG_TTY_GETKEY 1
 #define MSG_TTY_UPDATE 2
@@ -37,5 +41,11 @@ void consl_accept(Console *c, char ch);
 void readkey(void);
 void update_banner(void);
 void read_request(DevMessage *m);
+pid_t TTY;
 
+void init_tty(void);
+void ttyd(void);
+
+void init_console();
+void send_keymsg(void);
 #endif

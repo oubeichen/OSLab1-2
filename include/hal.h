@@ -3,6 +3,7 @@
 #include "x86.h"
 #include "adt/list.h"
 #include "kthread.h"
+#include "message.h"
 #define MSG_DEVRD  1
 #define MSG_DEVWR  2
 struct MsgHead{
@@ -36,4 +37,5 @@ size_t dev_write(Device *dev, off_t offset, void *buf, size_t count);
 void hal_register(const char *name, pid_t pid, int dev_id);
 Device *hal_get(const char *name);
 void hal_list(void);
+void init_hal(void);
 #endif

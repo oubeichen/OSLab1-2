@@ -2,9 +2,7 @@
 #include "debug.h"
 #include "message.h"
 #include "tty.h"
-#include "hal.h"
 //#include "mods/proc.h"
-#include "x86.h"
 
 void
 ttyd(void) {

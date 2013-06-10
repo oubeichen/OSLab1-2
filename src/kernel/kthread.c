@@ -91,6 +91,7 @@ V(Semaphore *sem) {
 }
 void schedule()
 {
+	if(!need_sched)return;
 	if(!list_empty(&runqh)){
 		nowrun = nowrun->next;
 		if(nowrun == &runqh)//如果回到了表头

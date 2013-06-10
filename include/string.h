@@ -13,6 +13,6 @@ char *utoa_buf(unsigned int value, char *buf, int base);
 
 int toupper(int ch);
 int tolower(int ch);
-
+int strcmp(const char *source,const char *dest);
 #endif
 
