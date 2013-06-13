@@ -1,6 +1,7 @@
 #include "test.h"
 void
 echo() {
+	printk("inecho\n");
 	static int tty = 1;
 	char name[] = "tty*", buf[256];
 	Device *dev;
@@ -26,6 +27,7 @@ echo() {
 			printk("%s\n", name);
 		}
 	}
+	printk("outecho\n");
 }
 
 void

@@ -8,7 +8,8 @@ PCB *create_kthread(void *entry){
 		return NULL;
 	}	
 	PCB *pcb = pcb_stor + (pcb_stor_top++);//分配完后top加一
-	pcb->pid = ++pidnow;//分配pid
+	pidnow = pidnow +1;
+	pcb->pid = pidnow;//分配pid
 	TrapFrame *tf = ((TrapFrame*)(pcb->kstack + STK_SZ)) - 1;
        	assert(tf != NULL);
 	pcb->tf = tf;
@@ -36,6 +37,7 @@ PCB *create_kthread(void *entry){
  */
 void sleep(void){
 	lock();//锁current
+	printk("sleep %d\n",current->pid);
 	list_del(&current->runq);//从正在运行链表中删除
 	list_add_before(&freeqh,&current->freeq);//插入到可运行线程链表
 	unlock();//解锁
@@ -43,6 +45,7 @@ void sleep(void){
 }
 
 void wakeup(PCB *pcb){
+	printk("wakeup %d\n",pcb->pid);
 	list_del(&pcb->freeq);//从可运行链表中间删除
 	list_add_before(&runqh,&pcb->runq);//插入到正在运行线程链表
 }
@@ -70,6 +73,7 @@ void
 P(Semaphore *sem) {
 	lock();//锁定当前进程
 	sem->count --;
+	printk("P %d\n",sem->count);
 	if (sem->count < 0) {
 		list_add_before(&sem->queue, &current->semq);
 	        sleep(); // 令当前进程立即进入睡眠
@@ -81,17 +85,18 @@ void
 V(Semaphore *sem) {
 	lock();//锁定当前进程
 	sem->count ++;
+	printk("V %d\n",sem->count);
         if (sem->count <= 0) {
 	        assert(!list_empty(&sem->queue));
 	        PCB *pcb = list_entry(sem->queue.next, PCB, semq);
 	        list_del(sem->queue.next);
-	        wakeup(pcb); // 唤醒PCB所对应的进程
+	        printk("beforewakeup %d\n",pcb->pid);
+		wakeup(pcb); // 唤醒PCB所对应的进程
 	}
 	unlock();//解锁
 }
 void schedule()
 {
-	if(!need_sched)return;
 	if(!list_empty(&runqh)){
 		nowrun = nowrun->next;
 		if(nowrun == &runqh)//如果回到了表头
@@ -99,6 +104,7 @@ void schedule()
 			nowrun = nowrun->next;
 		}
 		current = list_entry(nowrun,PCB,runq);
+		printk("schedule %d\n",current->pid);
 	}else{
 		panic("Empty run list!");//运行线程链表是空的
 	}

@@ -17,17 +17,7 @@ void irq_handle(TrapFrame *tf) {
 	assert(irq >= 0);
 
 	if (irq < 1000) {
-		if(irq == 0)
-		{
-			update_sched();
-			update_jiffy();
-			send_updatemsg();	
-		}
-		else if(irq == 1)
-		{
-			send_keymsg();
-		}
-		else if(irq == 0x80){//从sleep进来的
+		if(irq == 0x80){//从sleep进来的
 			current->tf = tf;//时间片轮，每次运行下一个运行线程链表中的线程
 			schedule();
 		}else{
@@ -39,10 +29,25 @@ void irq_handle(TrapFrame *tf) {
 			panic("unexpected exception");
 		}
 	} else if (irq >= 1000) {//其他情况进来的，暂且当成正确的
-		// external interrupt
-		current->tf = tf;
-		//同上时间片轮
-		schedule();	
+		if(irq == 1000)
+		{
+			current->tf = tf;
+			//printk("zero irq\n");
+			update_sched();
+			update_jiffy();
+			send_updatemsg();	
+		}
+		else if(irq == 1001)
+		{
+			current->tf = tf;
+			printk("one irq\n");
+			send_keymsg();
+		}
+		else{// external interrupt
+			current->tf = tf;
+			//同上时间片轮
+			schedule();
+		}	
 	}
 }
 

@@ -26,7 +26,7 @@ vfprintf(void (*putchar_func)(char), const char *format, void **data) {
 			if(data)//以防万一data为空虽然好像没什么用因为data是void类型的没法预料
 			{
 				int *da = (int *)*(data++);
-				if(da){//以防万一da为空
+				//if(da){//以防万一da为空
 					char *str = itoa((int)da,10);//偷懒了:)
 					for(;*str;str++){//因为itoa不会返回NULL所以就直接输出
 						putchar_func(*str);
@@ -40,13 +40,13 @@ vfprintf(void (*putchar_func)(char), const char *format, void **data) {
 			s++;//跳过后面的'x'
 			if(data){
 				int *da = (int *)*(data++);
-				if(da){
+				//if(da){
 					char *str = itoa((int)da,16);//同样偷懒了,不用白不用:)
 					for(;*str;str++){//因为itoa不会返回NULL所以直接输出
 						putchar_func(*str);
 						charnum++;
 					}
-				}
+				//}
 			}
 		}
 		else if(*s == '%' && *(s+1) == 's'){

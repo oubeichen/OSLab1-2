@@ -19,6 +19,7 @@ struct DevMessage {
 	off_t offset;
 	void *buf;
 	size_t count;
+	ListHead list;
 };
 typedef struct DevMessage DevMessage;
 

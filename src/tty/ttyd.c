@@ -6,6 +6,7 @@
 
 void
 ttyd(void) {
+	printk("inttyd\n");
 	Message m;
 	int i;
 
@@ -47,5 +48,6 @@ ttyd(void) {
 			}
 		}
 	}
+	printk("outttyd\n");
 }
 

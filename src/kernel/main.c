@@ -71,12 +71,15 @@ os_init(void) {
 	//test_setup();
 	/*测试生产者消费者代码结束*/
 	//终端测试代码开始
+	msg_init();
 	init_hal();
 	init_timer();
 	init_tty();
 	PCB *temp = create_kthread(ttyd);
 	TTY = temp->pid;
+	printk("TTY:%d\n",TTY);
 	wakeup(temp);
+	printk("begin test\n");
 	test();
 	//终端测试代码结束
 	sti();

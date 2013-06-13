@@ -38,7 +38,8 @@ void update_jiffy(void) {
 }
 
 void update_sched(void) {
-	need_sched = TRUE;
+	//need_sched = TRUE;
+	schedule();
 }
 
 void init_i8253(void) {

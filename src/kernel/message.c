@@ -1,10 +1,12 @@
 #include "message.h"
 #include "kthread.h"
 #include "kernel.h"
+#include "string.h"
 
 void send(pid_t dst, Message *m)
 {
-	int i;
+	printk("onsending to %d\n",dst);
+	int ISHW = 1;
 	if(msg_size == MAXMSG)
 	{
 		panic("Msg storage is full!");
@@ -13,66 +15,85 @@ void send(pid_t dst, Message *m)
 	{
 		msg_now = (msg_now + 1) % MAXMSG;
 	}
-	msg_queue[msg_now].dest = dst;
-	if(!msg_queue[msg_now].src)
+	msg_queue[msg_now].src = m->src;
+	if(!m->src)
 	{
+		lock();
 		msg_queue[msg_now].src = current->pid;//不是中断发送的消息
+		ISHW = 0;
 	}
+	msg_queue[msg_now].dest = dst;
 	msg_queue[msg_now].type = m->type;
-	for(i = 0;i < MSG_SZ && m->payload[i];i++)
-	{
-		msg_queue[msg_now].payload[i] = m->payload[i];//拷贝payload
-	}
+	memcpy(msg_queue[msg_now].payload,m->payload,MSG_SZ);
 	list_init(&msg_queue[msg_now].mbox_h);
-	list_init(&msg_queue[msg_now].msg_h);
 	list_add_before(&mbox_head[dst],&msg_queue[msg_now].mbox_h);//加入到对应邮箱
-	list_add_before(&msg_head,&msg_queue[msg_now].msg_h);//加入到总队列
 	msg_size++;
-	V(&full_any);
 	V(&full[dst]);
-}
-void receive(pid_t dst, Message *m)
-{
-	int i;
-	Message *srcmsg = NULL;
-	P(&full_any);//若总队列都没消息，则阻塞
-	if(dst == ANY)
+	if(!ISHW)
 	{
-		srcmsg = list_entry(msg_head.next,Message,msg_h);
+		unlock();
 	}
-	dst = srcmsg->dest;//获取要取的邮箱
-	P(&full[dst]);//对应邮箱没消息，则阻塞
+}
+void receive(pid_t src, Message *m)
+{
+	pid_t dst;
+	//P(&full[current->pid]);
+	lock();
+	dst = current->pid;
+	printk("onreceiving %d from %d\n",dst,src);
+	Message *srcmsg = NULL;
+	if(src == ANY && !list_empty(&mbox_head[dst]))
+	{
+		srcmsg = list_entry(mbox_head[dst].next,Message,mbox_h);
+	}
+	else{
+		while(1)
+		{
+			if(!list_empty(&mbox_head[dst]))
+			{
+				ListHead *iter = NULL;
+				assert(mbox_head[dst].next != NULL);
+				list_foreach(iter,&mbox_head[dst])
+				{
+					printk("listforeach\n");
+					//assert(iter != NULL);
+					srcmsg = list_entry(iter,Message,mbox_h);
+					if(srcmsg->src == src)
+					{
+						break;
+					}
+				}	
+				if(iter != &mbox_head[dst])
+				{
+					break;
+				}
+			}
+			P(&full[dst]);//对应邮箱没对应来源消息，则阻塞
+		}
+	}
 	m->dest = dst;
 	m->type = srcmsg->type;
 	m->src = srcmsg->src;
-	for(i = 0;i < MSG_SZ && srcmsg->payload[i];i++)
-	{
-		m->payload[i] = srcmsg->payload[i];//拷贝消息内容
-	}
+	memcpy(m->payload,srcmsg->payload,MSG_SZ);
 	list_del(&srcmsg->mbox_h);
-	list_del(&srcmsg->msg_h);
 	srcmsg->type = 0;
 	msg_size--;
+	printk("receive successful\n");
+	unlock();
 }
 void msg_init()
 {
 	int i;
 	msg_now = 0;	
 	msg_size = 0;
-	list_init(&msg_head);//初始化总队列
 	for(i = 0;i < MAX_TH_NUM;i++)
 	{
+		new_sem(&full[i],0);
 		list_init(&mbox_head[i]);//初始化每个邮箱队列
 	}
 	for(i = 0;i < MAXMSG;i++)
 	{
 		msg_queue[i].type = 0;
 	}
-	/*for(i = 0;i < MAXMSG;i++)
-	{
-		list_init(&msg_queue[i].msg_head);
-		list_init(&msg_queue[i].mbox_head);
-	}*/
-	//本想用表头來判断是否存储消息的空间是否被使用，还是用效率高的type來判断吧
 }
 
