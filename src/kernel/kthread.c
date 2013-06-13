@@ -1,6 +1,7 @@
 #include "kthread.h"
 #include "kernel.h"
 #include "x86.h"
+volatile PCB *current;
 pid_t pidnow = 0;//当前分配到的pid值
 PCB *create_kthread(void *entry){
 	if(pcb_stor_top >= MAX_TH_NUM){//空间不够
@@ -46,6 +47,7 @@ void sleep(void){
 
 void wakeup(PCB *pcb){
 	printk("wakeup %d\n",pcb->pid);
+	printk("wakeup:current %d\n",current->pid);
 	list_del(&pcb->freeq);//从可运行链表中间删除
 	list_add_before(&runqh,&pcb->runq);//插入到正在运行线程链表
 }
@@ -83,15 +85,19 @@ P(Semaphore *sem) {
 
 void
 V(Semaphore *sem) {
+	printk("P:current %d\n",current->pid);
 	lock();//锁定当前进程
+	printk("P:current %d\n",current->pid);
 	sem->count ++;
 	printk("V %d\n",sem->count);
         if (sem->count <= 0) {
 	        assert(!list_empty(&sem->queue));
 	        PCB *pcb = list_entry(sem->queue.next, PCB, semq);
 	        list_del(sem->queue.next);
+	printk("P:current %d\n",current->pid);
 	        printk("beforewakeup %d\n",pcb->pid);
 		wakeup(pcb); // 唤醒PCB所对应的进程
+	printk("P:current %d\n",current->pid);
 	}
 	unlock();//解锁
 }
@@ -103,8 +109,9 @@ void schedule()
 		{
 			nowrun = nowrun->next;
 		}
+		printk("schedule from %d\n",current->pid);
 		current = list_entry(nowrun,PCB,runq);
-		printk("schedule %d\n",current->pid);
+		printk("schedule to %d\n",current->pid);
 	}else{
 		panic("Empty run list!");//运行线程链表是空的
 	}

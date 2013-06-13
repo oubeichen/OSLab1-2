@@ -17,6 +17,7 @@ ttyd(void) {
 	unlock();
 
 	while (1) {
+		printk("current %d\n",current->pid);
 		receive(ANY, &m);
 		if (m.src == MSG_HWINTR) {
 			switch (m.type) {

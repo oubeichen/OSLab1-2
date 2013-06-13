@@ -15,7 +15,7 @@ send_updatemsg(void) {
 void irq_handle(TrapFrame *tf) {
 	int irq = tf->irq;
 	assert(irq >= 0);
-
+	printk("irq: %d \n",irq);
 	if (irq < 1000) {
 		if(irq == 0x80){//从sleep进来的
 			current->tf = tf;//时间片轮，每次运行下一个运行线程链表中的线程
@@ -43,11 +43,11 @@ void irq_handle(TrapFrame *tf) {
 			printk("one irq\n");
 			send_keymsg();
 		}
-		else{// external interrupt
+		/*else{// external interrupt
 			current->tf = tf;
 			//同上时间片轮
 			schedule();
-		}	
+		}	*/
 	}
 }
 

@@ -32,7 +32,7 @@ vfprintf(void (*putchar_func)(char), const char *format, void **data) {
 						putchar_func(*str);
 						charnum++;
 					}
-				}
+				//}
 			}
 
 		}

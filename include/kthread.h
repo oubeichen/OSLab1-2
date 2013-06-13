@@ -24,7 +24,7 @@ struct Semaphore {
 typedef struct Semaphore Semaphore;//信号量结构定义
 
 //指向当前PCB的指针
-PCB *current; 
+extern volatile PCB *current; 
 ListHead runqh,freeqh;//正在运行的线程和可运行线程循环链表表头，每次插在表头的前面，即尾进头出,带一个空的表头
 ListHead *nowrun;//记录正在运行线程链表中当前运行的线程
 PCB pcb_stor[MAX_TH_NUM];//没找到动态分配的方式，所以用静态存储

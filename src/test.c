@@ -10,6 +10,7 @@ echo() {
 	unlock();
 	while (1) {
 		dev = hal_get(name);
+		printk("dev %d\n",dev->pid);
 		if (dev != NULL) {
 			dev_write(dev, 0, name, 4);
 			dev_write(dev, 0, "# ", 2);

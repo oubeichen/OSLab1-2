@@ -2,10 +2,10 @@
 #include "kthread.h"
 #include "kernel.h"
 #include "string.h"
+#include "tty.h"
 
 void send(pid_t dst, Message *m)
 {
-	printk("onsending to %d\n",dst);
 	int ISHW = 1;
 	if(msg_size == MAXMSG)
 	{
@@ -16,30 +16,34 @@ void send(pid_t dst, Message *m)
 		msg_now = (msg_now + 1) % MAXMSG;
 	}
 	msg_queue[msg_now].src = m->src;
-	if(!m->src)
+	if(m->src!=MSG_HWINTR)
 	{
 		lock();
 		msg_queue[msg_now].src = current->pid;//不是中断发送的消息
 		ISHW = 0;
 	}
+	printk("onsending to %d ishw = %d current= %d \n",dst,ISHW,current->pid);
 	msg_queue[msg_now].dest = dst;
 	msg_queue[msg_now].type = m->type;
 	memcpy(msg_queue[msg_now].payload,m->payload,MSG_SZ);
 	list_init(&msg_queue[msg_now].mbox_h);
 	list_add_before(&mbox_head[dst],&msg_queue[msg_now].mbox_h);//加入到对应邮箱
 	msg_size++;
+	printk("onsending to %d ishw = %d current= %d \n",dst,ISHW,current->pid);
 	V(&full[dst]);
+	printk("onsending to %d ishw = %d current= %d \n",dst,ISHW,current->pid);
 	if(!ISHW)
 	{
 		unlock();
 	}
+	printk("onsending to %d ishw = %d current= %d \n",dst,ISHW,current->pid);
 }
 void receive(pid_t src, Message *m)
 {
 	pid_t dst;
 	//P(&full[current->pid]);
-	lock();
 	dst = current->pid;
+	lock();
 	printk("onreceiving %d from %d\n",dst,src);
 	Message *srcmsg = NULL;
 	if(src == ANY && !list_empty(&mbox_head[dst]))
