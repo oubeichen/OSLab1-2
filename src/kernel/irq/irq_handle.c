@@ -31,7 +31,6 @@ void irq_handle(TrapFrame *tf) {
 		if(irq == 1000)//暂且不写add_irq_handle函数
 		{
 			current->tf = tf;
-			//printk("zero irq\n");
 			update_sched();
 			update_jiffy();
 			send_updatemsg();	
@@ -39,7 +38,6 @@ void irq_handle(TrapFrame *tf) {
 		else if(irq == 1001)
 		{
 			current->tf = tf;
-			//printk("one irq\n");
 			send_keymsg();
 		}
 		else{// external interrupt

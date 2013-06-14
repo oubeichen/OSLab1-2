@@ -35,7 +35,6 @@ PCB *create_kthread(void *entry){
  */
 void sleep(void){
 	lock();//锁current
-	printk("sleep %d\n",current->pid);
 	list_del(&current->runq);//从正在运行链表中删除
 	list_add_before(&freeqh,&current->freeq);//插入到可运行线程链表
 	unlock();//解锁
@@ -70,7 +69,6 @@ void
 P(Semaphore *sem) {
 	lock();//锁定当前进程
 	sem->count --;
-	printk("P %d\n",sem->count);
 	if (sem->count < 0) {
 		list_add_before(&sem->queue, &current->semq);
 	        sleep(); // 令当前进程立即进入睡眠
@@ -80,10 +78,8 @@ P(Semaphore *sem) {
 
 void
 V(Semaphore *sem) {
-	printk("V:current %d\n",current->pid);
 	lock();//锁定当前进程
 	sem->count ++;
-	printk("V %d\n",sem->count);
         if (sem->count <= 0) {
 	        assert(!list_empty(&sem->queue));
 	        PCB *pcb = list_entry(sem->queue.next, PCB, semq);
@@ -100,9 +96,7 @@ void schedule()
 		{
 			nowrun = nowrun->next;
 		}
-		printk("schedule from %d\n",current->pid);
 		current = list_entry(nowrun,PCB,runq);
-		printk("schedule to %d\n",current->pid);
 	}else{
 		panic("Empty run list!");//运行线程链表是空的
 	}

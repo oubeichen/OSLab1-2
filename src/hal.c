@@ -66,7 +66,6 @@ dev_rw(int type, Device *dev, off_t offset, void *buf, size_t count) {
 	m.buf = buf;
 	m.count = count;
 	send(dev->pid, (Message*)&m);
-	//printk("devrw %d current %d\n",dev->pid,current->pid);
 	receive(dev->pid, (Message*)&m);
 	return m.header.type;
 }
