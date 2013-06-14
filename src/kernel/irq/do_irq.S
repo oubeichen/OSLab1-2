@@ -23,6 +23,7 @@
 .globl irqall; irqall:  pushl $0;  pushl   $-1; jmp trap
 
 .extern irq_handle
+.global current
 
 trap:
 	cli

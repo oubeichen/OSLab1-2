@@ -22,29 +22,23 @@ void send(pid_t dst, Message *m)
 		msg_queue[msg_now].src = current->pid;//不是中断发送的消息
 		ISHW = 0;
 	}
-	printk("onsending to %d ishw = %d current= %d \n",dst,ISHW,current->pid);
 	msg_queue[msg_now].dest = dst;
 	msg_queue[msg_now].type = m->type;
 	memcpy(msg_queue[msg_now].payload,m->payload,MSG_SZ);
 	list_init(&msg_queue[msg_now].mbox_h);
 	list_add_before(&mbox_head[dst],&msg_queue[msg_now].mbox_h);//加入到对应邮箱
 	msg_size++;
-	printk("onsending to %d ishw = %d current= %d \n",dst,ISHW,current->pid);
 	V(&full[dst]);
-	printk("onsending to %d ishw = %d current= %d \n",dst,ISHW,current->pid);
 	if(!ISHW)
 	{
 		unlock();
 	}
-	printk("onsending to %d ishw = %d current= %d \n",dst,ISHW,current->pid);
 }
 void receive(pid_t src, Message *m)
 {
 	pid_t dst;
-	//P(&full[current->pid]);
 	dst = current->pid;
 	lock();
-	printk("onreceiving %d from %d\n",dst,src);
 	Message *srcmsg = NULL;
 	if(src == ANY && !list_empty(&mbox_head[dst]))
 	{
@@ -56,11 +50,9 @@ void receive(pid_t src, Message *m)
 			if(!list_empty(&mbox_head[dst]))
 			{
 				ListHead *iter = NULL;
-				assert(mbox_head[dst].next != NULL);
 				list_foreach(iter,&mbox_head[dst])
 				{
-					printk("listforeach\n");
-					//assert(iter != NULL);
+					assert(iter != NULL);
 					srcmsg = list_entry(iter,Message,mbox_h);
 					if(srcmsg->src == src)
 					{
@@ -82,7 +74,6 @@ void receive(pid_t src, Message *m)
 	list_del(&srcmsg->mbox_h);
 	srcmsg->type = 0;
 	msg_size--;
-	printk("receive successful\n");
 	unlock();
 }
 void msg_init()

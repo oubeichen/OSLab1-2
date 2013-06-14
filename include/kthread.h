@@ -5,7 +5,7 @@
 #include "adt/list.h"
 
 #define MAX_TH_NUM 512//最多线程数
-#define STK_SZ 512 //Stack Size
+#define STK_SZ 1024 //Stack Size
 
 struct PCB {
 	TrapFrame *tf;
@@ -24,8 +24,8 @@ struct Semaphore {
 typedef struct Semaphore Semaphore;//信号量结构定义
 
 //指向当前PCB的指针
-extern volatile PCB *current; 
 ListHead runqh,freeqh;//正在运行的线程和可运行线程循环链表表头，每次插在表头的前面，即尾进头出,带一个空的表头
+PCB *current;
 ListHead *nowrun;//记录正在运行线程链表中当前运行的线程
 PCB pcb_stor[MAX_TH_NUM];//没找到动态分配的方式，所以用静态存储
 int pcb_stor_top;//pcb_stor已经使用个数

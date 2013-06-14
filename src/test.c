@@ -1,7 +1,7 @@
 #include "test.h"
 void
 echo() {
-	printk("inecho\n");
+	//printk("inecho\n");
 	static int tty = 1;
 	char name[] = "tty*", buf[256];
 	Device *dev;
@@ -10,7 +10,7 @@ echo() {
 	unlock();
 	while (1) {
 		dev = hal_get(name);
-		printk("dev %d\n",dev->pid);
+		//printk("dev %d\n",dev->pid);
 		if (dev != NULL) {
 			dev_write(dev, 0, name, 4);
 			dev_write(dev, 0, "# ", 2);
@@ -28,7 +28,6 @@ echo() {
 			printk("%s\n", name);
 		}
 	}
-	printk("outecho\n");
 }
 
 void

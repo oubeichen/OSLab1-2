@@ -1,16 +1,13 @@
 #include "kthread.h"
 #include "kernel.h"
 #include "x86.h"
-volatile PCB *current;
-pid_t pidnow = 0;//当前分配到的pid值
 PCB *create_kthread(void *entry){
 	if(pcb_stor_top >= MAX_TH_NUM){//空间不够
 		panic("The PCB storage is full!");
 		return NULL;
 	}	
 	PCB *pcb = pcb_stor + (pcb_stor_top++);//分配完后top加一
-	pidnow = pidnow +1;
-	pcb->pid = pidnow;//分配pid
+	pcb->pid = pcb_stor_top;//分配pid
 	TrapFrame *tf = ((TrapFrame*)(pcb->kstack + STK_SZ)) - 1;
        	assert(tf != NULL);
 	pcb->tf = tf;
@@ -46,8 +43,6 @@ void sleep(void){
 }
 
 void wakeup(PCB *pcb){
-	printk("wakeup %d\n",pcb->pid);
-	printk("wakeup:current %d\n",current->pid);
 	list_del(&pcb->freeq);//从可运行链表中间删除
 	list_add_before(&runqh,&pcb->runq);//插入到正在运行线程链表
 }
@@ -85,19 +80,15 @@ P(Semaphore *sem) {
 
 void
 V(Semaphore *sem) {
-	printk("P:current %d\n",current->pid);
+	printk("V:current %d\n",current->pid);
 	lock();//锁定当前进程
-	printk("P:current %d\n",current->pid);
 	sem->count ++;
 	printk("V %d\n",sem->count);
         if (sem->count <= 0) {
 	        assert(!list_empty(&sem->queue));
 	        PCB *pcb = list_entry(sem->queue.next, PCB, semq);
 	        list_del(sem->queue.next);
-	printk("P:current %d\n",current->pid);
-	        printk("beforewakeup %d\n",pcb->pid);
 		wakeup(pcb); // 唤醒PCB所对应的进程
-	printk("P:current %d\n",current->pid);
 	}
 	unlock();//解锁
 }

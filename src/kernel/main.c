@@ -50,6 +50,10 @@ test_setup(void) {
     wakeup(create_kthread(test_consumer));
 }
 */
+void loop(void)
+{
+	while(1);
+}
 void
 os_init(void) {
 	init_seg();
@@ -77,11 +81,12 @@ os_init(void) {
 	init_tty();
 	PCB *temp = create_kthread(ttyd);
 	TTY = temp->pid;
-	printk("TTY:%d\n",TTY);
+	//printk("TTY:%d\n",TTY);
 	wakeup(temp);
 	printk("begin test\n");
 	test();
 	//终端测试代码结束
+	wakeup(create_kthread(loop));//经同学提醒这里要加一个循环的线程防止没有可运行线程退出
 	sti();
 	while (TRUE) {
 		wait_intr();
